@@ -1,5 +1,5 @@
 //-------------------------------------
-// Constants & DOM Elements
+// DOM Elements & Constants
 //-------------------------------------
 const canvas = document.getElementById('fractalCanvas');
 const ctx = canvas.getContext('2d');
@@ -11,23 +11,25 @@ const iterationLabel = document.getElementById('iterationLabel');
 
 const MAX_ITERATIONS = 50000;
 
-// Corners of the main triangle
+// The triangle corners
 const corners = [
   { x: canvas.width / 2, y: 0 },            // top
   { x: 0,               y: canvas.height }, // bottom-left
   { x: canvas.width,    y: canvas.height }  // bottom-right
 ];
 
-// We'll store all fractal points here once computed
-let fractalPoints = [];
-// Keep track of current iteration on the timeline
+// Data structure to hold all iteration info
+// Each entry: { from: {x, y}, corner: {x, y}, to: {x, y} }
+let iterationSteps = [];
+
+// Current iteration index
 let currentIteration = 0;
-// Playback state
+// Whether we are animating
 let isPlaying = false;
 let playInterval = null;
 
 //-------------------------------------
-// 1) Draw the outline of the big triangle
+// Utility: Draw the outline of the main triangle
 //-------------------------------------
 function drawTriangleOutline() {
   ctx.beginPath();
@@ -41,8 +43,8 @@ function drawTriangleOutline() {
 }
 
 //-------------------------------------
-// 2) Check if the user's click is inside the main triangle
-//    Using the "area" method
+// Utility: Check if user click is inside the big triangle
+// Using "area" method
 //-------------------------------------
 function area(x1, y1, x2, y2, x3, y3) {
   return Math.abs(
@@ -60,96 +62,141 @@ function pointInTriangle(px, py, c1, c2, c3) {
 }
 
 //-------------------------------------
-// 3) Compute all 50,000 chaos-game points
+// 1) Precompute iteration steps
+//    For each iteration, we store:
+//    - "from" = current point (blue circle)
+//    - "corner" = chosen corner
+//    - "to" = midpoint (red circle)
 //-------------------------------------
-function computeChaosGamePoints(startX, startY) {
-  const points = [];
-  // Current point
+function computeIterationSteps(startX, startY) {
+  const steps = [];
+
   let currentPoint = { x: startX, y: startY };
 
   for (let i = 0; i < MAX_ITERATIONS; i++) {
-    // Randomly pick a corner
+    // Pick a corner
     const corner = corners[Math.floor(Math.random() * corners.length)];
-    // Move halfway towards that corner
-    currentPoint.x = (currentPoint.x + corner.x) / 2;
-    currentPoint.y = (currentPoint.y + corner.y) / 2;
-    // Store a copy of this point
-    points.push({ x: currentPoint.x, y: currentPoint.y });
+    // Prepare the step object
+    const stepData = {
+      from: { x: currentPoint.x, y: currentPoint.y },
+      corner: { x: corner.x, y: corner.y },
+      to: {}
+    };
+    // Compute midpoint
+    const midX = (currentPoint.x + corner.x) / 2;
+    const midY = (currentPoint.y + corner.y) / 2;
+    stepData.to = { x: midX, y: midY };
+
+    // Update our current point to the new midpoint
+    currentPoint = { x: midX, y: midY };
+
+    // Store the step
+    steps.push(stepData);
   }
-  return points;
+  return steps;
 }
 
 //-------------------------------------
-// 4) Draw points up to 'iteration' index
+// 2) Draw up to a certain iteration index
+//    For each step i up to "iteration":
+//    - Draw big blue circle at "from"
+//    - Draw line from "from" to "corner"
+//    - Draw small red circle at "to"
 //-------------------------------------
-function drawPointsUpToIteration(iteration) {
-  // Clear the canvas
+function drawUpToIteration(iteration) {
+  // Clear canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  // Redraw the outline
+  // Draw the triangle outline
   drawTriangleOutline();
 
-  // Draw fractal points from 0 to 'iteration'
-  // (iteration is inclusive, so let's go up to that index)
+  // Draw all steps from 0..(iteration - 1) inclusive
+  // If iteration=0, we skip drawing any fractal step
   for (let i = 0; i < iteration; i++) {
-    const p = fractalPoints[i];
-    ctx.fillRect(p.x, p.y, 1, 1);
+    const step = iterationSteps[i];
+    // "from" in blue
+    drawCircle(step.from.x, step.from.y, 4, 'blue'); // bigger radius for clarity
+    // line from "from" to corner
+    drawLine(step.from.x, step.from.y, step.corner.x, step.corner.y, 'black');
+    // midpoint "to" in red
+    drawCircle(step.to.x, step.to.y, 2, 'red');
   }
 }
 
 //-------------------------------------
-// 5) Canvas Click -> Attempt to set initial point
+// 3) Helper: draw a circle
+//-------------------------------------
+function drawCircle(x, y, radius, color) {
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+//-------------------------------------
+// 4) Helper: draw a line
+//-------------------------------------
+function drawLine(x1, y1, x2, y2, color) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
+//-------------------------------------
+// Canvas click: set initial point
 //-------------------------------------
 canvas.addEventListener('click', (e) => {
-  // Only set a new starting point if we haven't started playing
-  // (Alternatively, you could allow re-click to reset everything.)
-  if (fractalPoints.length > 0 && !confirm('Reset fractal with a new start point?')) {
+  // If we already have data, prompt user about resetting
+  if (iterationSteps.length > 0 && !confirm('Reset fractal with a new start point?')) {
     return;
   }
 
-  // Get click coordinates relative to canvas
+  // Identify click coordinates
   const rect = canvas.getBoundingClientRect();
   const clickX = e.clientX - rect.left;
   const clickY = e.clientY - rect.top;
 
-  // Check if inside the main triangle
+  // Check inside triangle
   if (!pointInTriangle(clickX, clickY, corners[0], corners[1], corners[2])) {
     alert('You clicked outside the triangle! Try again.');
     return;
   }
 
-  // Valid point -> compute fractal
-  fractalPoints = computeChaosGamePoints(clickX, clickY);
+  // Compute all iteration steps from this start point
+  iterationSteps = computeIterationSteps(clickX, clickY);
 
-  // Reset timeline to 0
+  // Reset iteration and timeline
   currentIteration = 0;
   timeline.value = 0;
   iterationLabel.textContent = '0';
 
-  // Enable timeline & buttons
+  // Enable the timeline + play/pause
   timeline.disabled = false;
   playBtn.disabled = false;
   pauseBtn.disabled = false;
 
-  // Draw the outline (no fractal points shown yet)
-  drawPointsUpToIteration(currentIteration);
+  // Draw the outline plus the initial chosen point
+  drawUpToIteration(0);
+  // Mark the initial chosen point in big blue
+  drawCircle(clickX, clickY, 5, 'blue');
 });
 
 //-------------------------------------
-// 6) Timeline Controls (scrub manually)
+// Timeline manual scrub
 //-------------------------------------
 timeline.addEventListener('input', () => {
-  // Update iteration to the timeline's value
   currentIteration = parseInt(timeline.value, 10);
   iterationLabel.textContent = currentIteration;
-  // Re-draw fractal up to that iteration
-  drawPointsUpToIteration(currentIteration);
+  drawUpToIteration(currentIteration);
 });
 
 //-------------------------------------
-// 7) Play/Pause buttons
+// Play & Pause
 //-------------------------------------
 playBtn.addEventListener('click', () => {
-  if (isPlaying) return; // already playing
+  if (isPlaying) return;
   isPlaying = true;
 
   playInterval = setInterval(() => {
@@ -157,18 +204,14 @@ playBtn.addEventListener('click', () => {
       currentIteration++;
       timeline.value = currentIteration;
       iterationLabel.textContent = currentIteration;
-      // Draw next point incrementally or from scratch
-      // For simplicity, we'll just re-draw from scratch:
-      drawPointsUpToIteration(currentIteration);
+      drawUpToIteration(currentIteration);
     } else {
       pausePlayback();
     }
-  }, 10); // Increase or decrease delay to control speed
+  }, 10); // adjust speed by changing interval
 });
 
-pauseBtn.addEventListener('click', () => {
-  pausePlayback();
-});
+pauseBtn.addEventListener('click', pausePlayback);
 
 function pausePlayback() {
   if (playInterval) {
@@ -179,7 +222,7 @@ function pausePlayback() {
 }
 
 //-------------------------------------
-// Initial draw: just the outline
+// Initial: just draw the empty canvas with outline
 //-------------------------------------
 ctx.clearRect(0, 0, canvas.width, canvas.height);
 drawTriangleOutline();
