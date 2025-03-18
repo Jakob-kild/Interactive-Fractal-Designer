@@ -8,22 +8,33 @@ h1 {
   margin-bottom: 10px;
 }
 
-.sliderContainer {
-  margin-bottom: 10px;
-}
-
-label {
-  margin-right: 10px;
-  font-weight: bold;
-}
-
-#sliderValue {
-  margin-left: 10px;
+.instructions {
+  max-width: 600px;
+  margin: 0 auto 15px;
+  text-align: left;
 }
 
 canvas {
   border: 1px solid #000;
-  /* Center the canvas */
   display: block;
-  margin: 0 auto;
+  margin: 0 auto 15px;
+}
+
+.timeline-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+
+#iterationLabel {
+  display: inline-block;
+  width: 50px;
+  text-align: right;
 }

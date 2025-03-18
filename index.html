@@ -2,29 +2,40 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Sierpinski - User-Defined Start</title>
+    <title>Sierpinski Timeline Demo</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
 
-    <h1>Sierpinski Triangle Demo</h1>
+    <h1>Sierpinski Triangle - Timeline Playback</h1>
 
-    <!-- Iteration Slider -->
-    <div class="sliderContainer">
-      <label for="iterationsSlider">Iterations:</label>
-      <input
-        type="range"
-        id="iterationsSlider"
-        min="1000"
-        max="50000"
-        step="1000"
-        value="5000"
-      />
-      <span id="sliderValue">5000</span>
+    <div class="instructions">
+      <p>
+        Click anywhere <strong>inside</strong> the red triangle to set your starting point.
+        Then use the timeline or play/pause controls to watch the fractal form up to 50,000 points.
+      </p>
     </div>
 
-    <!-- Canvas where user can click to set the starting point -->
+    <!-- Canvas for drawing -->
     <canvas id="fractalCanvas" width="600" height="600"></canvas>
+
+    <!-- Timeline and controls -->
+    <div class="timeline-controls">
+      <button id="playBtn" disabled>Play</button>
+      <button id="pauseBtn" disabled>Pause</button>
+
+      <label for="timeline">Current Iteration: </label>
+      <input
+        type="range"
+        id="timeline"
+        min="0"
+        max="50000"
+        value="0"
+        disabled
+      />
+      <span id="iterationLabel">0</span>
+      <span>/ 50000</span>
+    </div>
 
     <script src="script.js"></script>
   </body>
