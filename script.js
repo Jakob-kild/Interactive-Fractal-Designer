@@ -22,7 +22,7 @@ function drawSierpinski() {
   };
 
   // Choose how many points to plot
-  const iterations = 300;
+  const iterations = 3;
 
   // Draw each point
   for (let i = 0; i < iterations; i++) {
