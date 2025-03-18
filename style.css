@@ -1,10 +1,15 @@
 body {
   margin: 20px;
   font-family: sans-serif;
+  text-align: center;
 }
 
 h1 {
-  text-align: center;
+  margin-bottom: 10px;
+}
+
+.sliderContainer {
+  margin-bottom: 10px;
 }
 
 label {
@@ -17,7 +22,8 @@ label {
 }
 
 canvas {
-  display: block;
-  margin: 20px auto;
   border: 1px solid #000;
+  /* Center the canvas */
+  display: block;
+  margin: 0 auto;
 }
