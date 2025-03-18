@@ -4,6 +4,6 @@ A minimal **Chaos Game** approach to drawing the Sierpinski Triangle on an HTML 
 
 ## Live Demo
 
-**[View the website here](https://jakob-kild.github.io/Interactive-Fractal-Designer/)**
+**<a href="https://example.com" target="_blank">Open in New Tab</a>**
 
 
