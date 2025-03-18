@@ -2,30 +2,31 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Sierpinski - Detailed Iterations</title>
+    <title>Sierpinski - Step-by-Step Visualization</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
 
-    <h1>Sierpinski Triangle - Detailed Iteration Visualization</h1>
-
+    <h1>Sierpinski Triangle - Step-by-Step</h1>
     <div class="instructions">
       <p>
-        Click inside the red-outlined triangle to set the initial point.  
-        We fix <strong>50,000</strong> total iterations.  
-        The <strong>large blue dot</strong> is the starting point for each step,  
-        a <strong>red dot</strong> is the new midpoint, and a line is drawn between them.
+        Click <strong>inside</strong> the red triangle to choose a starting point.
+        We compute <strong>50,000</strong> steps in total.
       </p>
       <p>
-        Use the timeline or Play/Pause to advance through the iterations.  
-        <em>Warning</em>: Going all the way to 50,000 may be visually messy and can slow down the browser.
+        Use the timeline or Play/Pause controls to advance:
+        <ul>
+          <li>All <em>previous</em> points become <strong>black</strong>.</li>
+          <li>The <strong>current step</strong> has a large <strong>blue</strong> “from” point, 
+              a line to the chosen corner, and a small <strong>red</strong> midpoint.</li>
+        </ul>
       </p>
     </div>
 
     <!-- Canvas -->
     <canvas id="fractalCanvas" width="600" height="600"></canvas>
 
-    <!-- Timeline Controls -->
+    <!-- Timeline & Controls -->
     <div class="timeline-controls">
       <button id="playBtn" disabled>Play</button>
       <button id="pauseBtn" disabled>Pause</button>
