@@ -1,0 +1,12 @@
+/* Basic page reset for convenience */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Center the canvas and give it a visible border */
+canvas {
+  display: block;
+  margin: 50px auto;
+  border: 1px solid #000;
+}
