@@ -2,10 +2,25 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Fractal Prototype</title>
+    <title>Sierpinski Slider Demo</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+
+    <h1>Sierpinski Triangle with Slider</h1>
+
+    <!-- Iteration Slider -->
+    <label for="iterationsSlider">Iterations:</label>
+    <input 
+      type="range" 
+      id="iterationsSlider" 
+      min="1000" 
+      max="50000" 
+      step="1000" 
+      value="5000"
+    />
+    <span id="sliderValue">5000</span>
+
     <!-- Our drawing area -->
     <canvas id="fractalCanvas" width="600" height="600"></canvas>
 

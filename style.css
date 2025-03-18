@@ -1,13 +1,23 @@
-/* Basic page reset for convenience */
 body {
-  margin: 0;
-  padding: 0;
-  background: blue;
+  margin: 20px;
+  font-family: sans-serif;
 }
 
-/* Center the canvas and give it a visible border */
+h1 {
+  text-align: center;
+}
+
+label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+#sliderValue {
+  margin-left: 10px;
+}
+
 canvas {
   display: block;
-  margin: 50px auto;
+  margin: 20px auto;
   border: 1px solid #000;
 }
